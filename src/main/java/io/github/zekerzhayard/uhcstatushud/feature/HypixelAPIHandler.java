@@ -41,6 +41,11 @@ public class HypixelAPIHandler {
                         if (BoardRenderer.instance.isInUHC = this.getPlayerbyUUID(Minecraft.getMinecraft().thePlayer.getUniqueID()).get("mostRecentGameType").getAsString().equals("UHC")) {
                             if (!this.recentRoomName.equals(matcher.group("room"))) {
                                 BoardRenderer.instance = new BoardRenderer();
+                                BoardRenderer.instance.playerWidth = BoardRenderer.instance.teamsWidth = 0;
+                                BoardRenderer.instance.playerList.clear();
+                                BoardRenderer.instance.killerList.clear();
+                                BoardRenderer.instance.teamList.clear();
+                                BoardRenderer.instance.teamkillerList.clear();
                             }
                         }
                         this.recentRoomName = matcher.group("room");

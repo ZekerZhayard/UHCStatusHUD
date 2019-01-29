@@ -5,6 +5,7 @@
         "1.8.9-recomended": "1.0.0"
     },
     "1.8.9": {
+        "1.0.1": "Fix the list couldn't be cleared when start a new game.",
         "1.0.0": "Build the mod."
     }
 }

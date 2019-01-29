@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 public class KeyListener {
     public static KeyListener instance = new KeyListener();
     public boolean showPanel = true;
-    public KeyBinding showPanelKey = new KeyBinding(UHCStatusHUD.NAME, Keyboard.KEY_RSHIFT, "panel.show");
+    public KeyBinding showPanelKey = new KeyBinding("panel.show", Keyboard.KEY_RSHIFT, UHCStatusHUD.NAME);
 
     @SubscribeEvent()
     public void onKeyInput(InputEvent.KeyInputEvent event) {
