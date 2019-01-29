@@ -1,0 +1,10 @@
+{
+    "homepage": "https://github.com/ZekerZhayard/UHCStatusHUD",
+    "promos": {
+        "1.8.9-latest": "1.0.0",
+        "1.8.9-recomended": "1.0.0"
+    },
+    "1.8.9": {
+        "1.0.0": "Build the mod."
+    }
+}
