@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 
 import io.github.zekerzhayard.uhcstatushud.UHCStatusHUD;
 import io.github.zekerzhayard.uhcstatushud.config.EnumConfig;
-import io.github.zekerzhayard.uhcstatushud.gui.ModGuiConfig;
+import io.github.zekerzhayard.uhcstatushud.gui.ModGuiSettings;
 import io.github.zekerzhayard.uhcstatushud.utils.DebugUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -35,14 +35,14 @@ public class BoardRenderer {
     
     @SubscribeEvent()
     public void onRender(TickEvent.RenderTickEvent event) {
-        if (KeyListener.instance.showPanel && (Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof ModGuiConfig || Minecraft.getMinecraft().currentScreen instanceof GuiChat)) {
+        if ((KeyListener.instance.showPanel && (Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat)) || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings) {
             int x = EnumConfig.SOLOX.getProperty().getInt();
             int y = EnumConfig.SOLOY.getProperty().getInt();
             int baseWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("=");
             if (EnumConfig.SHOWTITLE.getProperty().getBoolean()) {
                 Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.YELLOW.toString() + (this.isInUHC ? EnumChatFormatting.BOLD.toString() : "") + UHCStatusHUD.NAME, x, y, 0xFFFFFF);
             }
-            if (this.isInUHC) {
+            if (this.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings) {
                 String color = String.valueOf(EnumChatFormatting.func_175744_a(EnumConfig.PLAYERSCOLOR.getProperty().getInt())).replace("null", "");
                 for (Map.Entry<String, String> killer : this.killerList) {
                     Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(color + killer.getKey(), x + baseWidth * 2, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, 0xFFFFFF);

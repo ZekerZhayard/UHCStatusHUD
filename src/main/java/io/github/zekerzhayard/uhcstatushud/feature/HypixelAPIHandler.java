@@ -40,7 +40,6 @@ public class HypixelAPIHandler {
                     new Thread(() -> {
                         if (BoardRenderer.instance.isInUHC = this.getPlayerbyUUID(Minecraft.getMinecraft().thePlayer.getUniqueID()).get("mostRecentGameType").getAsString().equals("UHC")) {
                             if (!this.recentRoomName.equals(matcher.group("room"))) {
-                                BoardRenderer.instance = new BoardRenderer();
                                 BoardRenderer.instance.playerWidth = BoardRenderer.instance.teamsWidth = 0;
                                 BoardRenderer.instance.playerList.clear();
                                 BoardRenderer.instance.killerList.clear();
@@ -54,13 +53,12 @@ public class HypixelAPIHandler {
                     BoardRenderer.instance.isInUHC = false;
                 }
             }
-        } else if (this.isGettingApiKey) {
-            Matcher matcher = Pattern.compile("Your\\snew\\sAPI\\skey\\sis\\s(?<key>[0-9a-f]{4}([0-9a-f]{4}-){4}[0-9a-f]{12})").matcher(text);
-            if (matcher.find() && matcher.group(0).equals(text)) {
-                this.isGettingApiKey = false;
-                DebugUtils.debug("Caught the api key: " + matcher.group("key"), event);
-                this.apikey = matcher.group("key");
-            }
+        }
+        Matcher matcher = Pattern.compile("Your\\snew\\sAPI\\skey\\sis\\s(?<key>[0-9a-f]{4}([0-9a-f]{4}-){4}[0-9a-f]{12})").matcher(text);
+        if (matcher.find() && matcher.group(0).equals(text)) {
+            this.isGettingApiKey = false;
+            DebugUtils.debug("Caught the api key: " + matcher.group("key"));
+            this.apikey = matcher.group("key");
         }
     }
 

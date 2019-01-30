@@ -11,5 +11,8 @@ config.color.teams=The index of teams color formats (0 ~ 15). 0-Black, 1-Dark Bl
 # Command
 command.query=Could not find this player!
 
+# Gui
+gui.othersettings=Other Settings...
+
 # Key
 panel.show=Show the panel

@@ -14,7 +14,7 @@ public class ModGuiFactory implements IModGuiFactory {
 
     @Override()
     public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return ModGuiConfig.class;
+        return ModGuiSettings.class;
     }
 
     @Override()

@@ -12,5 +12,8 @@ config.color.teams=队伍显示颜色代码 (0 ~ 15)。 0-黑色, 1-深蓝色, 2
 # Command
 command.query=找不到这名玩家！
 
+# Gui
+gui.othersettings=其他设置...
+
 # Key
 panel.show=显示面板

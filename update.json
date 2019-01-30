@@ -1,10 +1,11 @@
 {
     "homepage": "https://github.com/ZekerZhayard/UHCStatusHUD",
     "promos": {
-        "1.8.9-latest": "1.0.0",
-        "1.8.9-recomended": "1.0.0"
+        "1.8.9-latest": "1.1.0",
+        "1.8.9-recomended": "1.1.0"
     },
     "1.8.9": {
+        "1.1.0": "Change settings gui.\nFix caught hyixel api.",
         "1.0.1": "Fix the list couldn't be cleared when start a new game.",
         "1.0.0": "Build the mod."
     }
