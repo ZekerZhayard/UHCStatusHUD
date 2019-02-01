@@ -12,14 +12,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class HypixelAPIHandler {
+    public static boolean isInUHC = false;
+    public static HypixelAPIHandler instance = new HypixelAPIHandler();
+
     private boolean isGettingApiKey = false;
     private boolean isGettingRoomName = false;
     private String apikey = "00000000-0000-0000-0000-000000000000";
     private String recentRoomName = "";
+
+    private HypixelAPIHandler() {
+
+    }
 
     @SubscribeEvent()
     public void onGuiRendered(GuiScreenEvent.InitGuiEvent.Post event) {
@@ -37,20 +45,19 @@ public class HypixelAPIHandler {
                 this.isGettingRoomName = false;
                 DebugUtils.debug("Caught current room name: " + matcher.group("room"), event);
                 if (matcher.group("room").contains("mega")) {
+                    DebugUtils.debug("Checking game type...");
                     new Thread(() -> {
-                        if (BoardRenderer.instance.isInUHC = this.getPlayerbyUUID(Minecraft.getMinecraft().thePlayer.getUniqueID()).get("mostRecentGameType").getAsString().equals("UHC")) {
+                        if (HypixelAPIHandler.isInUHC = this.getPlayerbyUUID(Minecraft.getMinecraft().thePlayer.getUniqueID()).get("mostRecentGameType").getAsString().equals("UHC")) {
+                            DebugUtils.debug("You are in UHC now!");
                             if (!this.recentRoomName.equals(matcher.group("room"))) {
-                                BoardRenderer.instance.playerWidth = BoardRenderer.instance.teamsWidth = 0;
-                                BoardRenderer.instance.playerList.clear();
-                                BoardRenderer.instance.killerList.clear();
-                                BoardRenderer.instance.teamList.clear();
-                                BoardRenderer.instance.teamkillerList.clear();
+                                MinecraftForge.EVENT_BUS.unregister(BoardRenderer.instance);
+                                MinecraftForge.EVENT_BUS.register(BoardRenderer.instance = new BoardRenderer());
                             }
                         }
                         this.recentRoomName = matcher.group("room");
                     }).start();
                 } else {
-                    BoardRenderer.instance.isInUHC = false;
+                    HypixelAPIHandler.isInUHC = false;
                 }
             }
         }

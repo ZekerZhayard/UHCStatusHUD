@@ -1,5 +1,6 @@
 package io.github.zekerzhayard.uhcstatushud.feature;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -17,6 +18,7 @@ import io.github.zekerzhayard.uhcstatushud.config.EnumConfig;
 import io.github.zekerzhayard.uhcstatushud.gui.ModGuiSettings;
 import io.github.zekerzhayard.uhcstatushud.utils.DebugUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -25,9 +27,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class BoardRenderer {
     public static BoardRenderer instance = new BoardRenderer();
-    public boolean isInUHC = false;
     public int playerWidth = 0;
+    public int playerkillWidth = 0;
     public int teamsWidth = 0;
+    public int teamskillWidth = 0;
     public CopyOnWriteArrayList<Map.Entry<String, String>> killerList = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<String> playerList = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Map.Entry<String, String>> teamkillerList = new CopyOnWriteArrayList<>();
@@ -35,28 +38,42 @@ public class BoardRenderer {
     
     @SubscribeEvent()
     public void onRender(TickEvent.RenderTickEvent event) {
-        if ((KeyListener.instance.showPanel && (Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat)) || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings) {
+        if ((KeyListener.instance.showPanelMode != 2 && (Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat)) || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings) {
             int x = EnumConfig.SOLOX.getProperty().getInt();
             int y = EnumConfig.SOLOY.getProperty().getInt();
             int baseWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("=");
-            if (EnumConfig.SHOWTITLE.getProperty().getBoolean()) {
-                Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.YELLOW.toString() + (this.isInUHC ? EnumChatFormatting.BOLD.toString() : "") + UHCStatusHUD.NAME, x, y, 0xFFFFFF);
+            int colorHex = this.getColorHex(EnumConfig.PANELCOLOR);
+            if (!this.killerList.isEmpty() && EnumConfig.SHOWPANEL.getProperty().getBoolean() && (HypixelAPIHandler.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings)) {
+                Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.playerWidth + this.playerkillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.killerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + 0x50000000);
             }
-            if (this.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings) {
-                String color = String.valueOf(EnumChatFormatting.func_175744_a(EnumConfig.PLAYERSCOLOR.getProperty().getInt())).replace("null", "");
+            if (EnumConfig.SHOWTITLE.getProperty().getBoolean()) {
+                Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.YELLOW.toString() + (HypixelAPIHandler.isInUHC ? EnumChatFormatting.BOLD.toString() : "") + UHCStatusHUD.NAME, x, y, 0xFFFFFF);
+            }
+            if (HypixelAPIHandler.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings) {
+                colorHex = this.getColorHex(EnumConfig.PLAYERSCOLOR);
                 for (Map.Entry<String, String> killer : this.killerList) {
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(color + killer.getKey(), x + baseWidth * 2, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, 0xFFFFFF);
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(color + killer.getValue(), x + baseWidth * 4 + this.playerWidth, y, 0xFFFFFF);
+                    if (KeyListener.instance.showPanelMode == 1 && this.killerList.indexOf(killer) + 1 > EnumConfig.MAXDISPLAY.getProperty().getInt()) {
+                        break;
+                    }
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(killer.getKey(), x + baseWidth * 2, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, colorHex);
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(killer.getValue(), x + baseWidth * 4 + this.playerWidth, y, colorHex);
                 }
                 x = EnumConfig.TEAMX.getProperty().getInt();
                 y = EnumConfig.TEAMY.getProperty().getInt();
-                color = String.valueOf(EnumChatFormatting.func_175744_a(EnumConfig.TEAMSCOLOR.getProperty().getInt())).replace("null", "");
                 if (!this.teamkillerList.isEmpty()) {
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(color + EnumChatFormatting.BOLD.toString() + "TEAMS:", x, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, 0xFFFFFF);
+                    if (EnumConfig.SHOWPANEL.getProperty().getBoolean()) {
+                        colorHex = this.getColorHex(EnumConfig.PANELCOLOR);
+                        Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.teamsWidth + this.teamskillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.teamkillerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + 0x50000000);
+                    }
+                    colorHex = this.getColorHex(EnumConfig.TEAMSCOLOR);
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.BOLD.toString() + "TEAMS:", x, y, colorHex);
                 }
                 for (Map.Entry<String, String> team : this.teamkillerList) {
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(color + team.getKey(), x, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, 0xFFFFFF);
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(color + team.getValue(), x + baseWidth * 2 + this.teamsWidth, y, 0xFFFFFF);
+                    if (KeyListener.instance.showPanelMode == 1 && this.teamkillerList.indexOf(team) + 1 > EnumConfig.MAXDISPLAY.getProperty().getInt()) {
+                        break;
+                    }
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(team.getKey(), x, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, colorHex);
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(team.getValue(), x + baseWidth * 2 + this.teamsWidth, y, colorHex);
                 }
             }
         }
@@ -77,26 +94,30 @@ public class BoardRenderer {
             if (text.equals("TEAMS: ")) {
                 DebugUtils.debug("Start to caught team messages.", event);
             }
-            Matcher m = Pattern.compile("\\s•\\s\\((?<name1>[A-Za-z0-9_]{3,16})(,\\s(?<name2>[A-Za-z0-9_]{3,16})){0,1}(,\\s(?<name3>[A-Za-z0-9_]{3,16})){0,1}(,\\s(?<name4>[A-Za-z0-9_]{3,16})){0,1}\\)").matcher(text);
+            Matcher m = Pattern.compile("\\s\u2022\\s\\((?<name1>[A-Za-z0-9_]{3,16})(,\\s(?<name2>[A-Za-z0-9_]{3,16})){0,1}(,\\s(?<name3>[A-Za-z0-9_]{3,16})){0,1}(,\\s(?<name4>[A-Za-z0-9_]{3,16})){0,1}\\)").matcher(text);
             if (m.find() && m.group(0).equals(text)) {
                 DebugUtils.debug("Caught the message: " + m.group(0), event);
                 this.teamList.add(Lists.newArrayList(m.group(0), Strings.nullToEmpty(m.group("name1")), Strings.nullToEmpty(m.group("name2")), Strings.nullToEmpty(m.group("name3")), Strings.nullToEmpty(m.group("name4"))));
             }
         }
-        if (this.isInUHC) {
+        if (HypixelAPIHandler.isInUHC) {
             Arrays.stream(EnumConfig.KILLTRIGGER.getProperty().getStringList()).map(str -> Pattern.compile(str).matcher(text)).filter(m -> m.find() && !m.group(0).contains(":")).findAny().ifPresent(m -> {
                 DebugUtils.debug("Caught the killer name: " + m.group("killer"));
                 this.playerList.add(m.group("killer"));
                 this.killerList.clear();
                 this.playerList.stream().collect(Collectors.groupingBy(str -> str, Collectors.counting())).entrySet().stream().sorted(Map.Entry.comparingByValue()).forEachOrdered(e -> {
-                    this.killerList.add(0, Maps.immutableEntry(e.getKey(), e.getValue().toString() + " kill" + (e.getValue() == 1 ? "" : "s")));
-                    this.playerWidth = Math.max(this.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(e.getKey()));
+                    Map.Entry<String, String> entry = Maps.immutableEntry(e.getKey(), e.getValue().toString() + " kill" + (e.getValue() == 1 ? "" : "s"));
+                    this.killerList.add(0, entry);
+                    this.playerWidth = Math.max(this.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(entry.getKey()));
+                    this.playerkillWidth = Math.max(this.playerkillWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(entry.getValue()));
                 });
                 this.teamList.stream().filter(list -> list.contains(m.group("killer"))).findAny().ifPresent(list -> this.teamList.add(list));
                 this.teamkillerList.clear();
                 this.teamList.stream().collect(Collectors.groupingBy(list -> list, Collectors.counting())).entrySet().stream().sorted(Map.Entry.comparingByValue()).filter(e -> e.getValue() > 1L).forEachOrdered(e -> {
-                    this.teamkillerList.add(0, Maps.immutableEntry(e.getKey().get(0), String.valueOf(e.getValue() - 1L) + " kill" + (e.getValue() == 2 ? "" : "s")));
-                    this.teamsWidth = Math.max(this.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(e.getKey().get(0)));
+                    Map.Entry<String, String> entry = Maps.immutableEntry(e.getKey().get(0), String.valueOf(e.getValue() - 1L) + " kill" + (e.getValue() == 2 ? "" : "s"));
+                    this.teamkillerList.add(0, entry);
+                    this.teamsWidth = Math.max(this.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(entry.getKey()));
+                    this.teamskillWidth = Math.max(this.teamskillWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(entry.getValue()));
                 });
             });
         }
@@ -114,5 +135,12 @@ public class BoardRenderer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private int getColorHex(EnumConfig colorConfig) {
+        if (!colorConfig.getType().equals(EnumConfig.Type.COLOR)) {
+            return 0;
+        }
+        return colorConfig.getProperty().getInt() == -1 ? Color.HSBtoRGB(System.currentTimeMillis() % 1000L / 1000.0F, 0.8F, 0.8F) : Minecraft.getMinecraft().fontRendererObj.getColorCode(Integer.toHexString(colorConfig.getProperty().getInt()).toCharArray()[0]);
     }
 }

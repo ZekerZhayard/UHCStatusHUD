@@ -1,12 +1,16 @@
 # Configurations comments translation
 config.panel.title=Enable or disable the title.
+config.panel.background=Enable or disable the panel background.
 config.debugmode=Enable or disable debug messages in chat gui.
 config.trigger.kill=Killing message trigger regex.
 config.trigger.start=UHC start message trigger regex.
+config.autosend=The message to auto send.
 config.x=The horizontal cooridate of the panel.
 config.y=The vertical coordinate of the panel.
-config.color.players=The index of players color formats (0 ~ 15). 0-Black, 1-Dark Blue, 2-Dark Green, 3-Dark Aqua, 4-Dark Red, 5-Dark Purple, 6-Gold, 7-Gray, 8-Dark Gray, 9-Blue, 10-Green, 11-Aqua, 12-Red, 13-Light Purple, 14-Yellow, 15-White
-config.color.teams=The index of teams color formats (0 ~ 15). 0-Black, 1-Dark Blue, 2-Dark Green, 3-Dark Aqua, 4-Dark Red, 5-Dark Purple, 6-Gold, 7-Gray, 8-Dark Gray, 9-Blue, 10-Green, 11-Aqua, 12-Red, 13-Light Purple, 14-Yellow, 15-White
+config.maxdisplay=Max lines to display in the panel.
+config.color.players=The index of players color formats (-1 ~ 15). -1-Rainbow, 0-Black, 1-Dark Blue, 2-Dark Green, 3-Dark Aqua, 4-Dark Red, 5-Dark Purple, 6-Gold, 7-Gray, 8-Dark Gray, 9-Blue, 10-Green, 11-Aqua, 12-Red, 13-Light Purple, 14-Yellow, 15-White
+config.color.teams=The index of teams color formats (-1 ~ 15). -1-Rainbow, 0-Black, 1-Dark Blue, 2-Dark Green, 3-Dark Aqua, 4-Dark Red, 5-Dark Purple, 6-Gold, 7-Gray, 8-Dark Gray, 9-Blue, 10-Green, 11-Aqua, 12-Red, 13-Light Purple, 14-Yellow, 15-White
+config.color.panel=The index of panel background color formats (-1 ~ 15). -1-Rainbow, 0-Black, 1-Dark Blue, 2-Dark Green, 3-Dark Aqua, 4-Dark Red, 5-Dark Purple, 6-Gold, 7-Gray, 8-Dark Gray, 9-Blue, 10-Green, 11-Aqua, 12-Red, 13-Light Purple, 14-Yellow, 15-White
 
 # Command
 command.query=Could not find this player!
@@ -15,4 +19,5 @@ command.query=Could not find this player!
 gui.othersettings=Other Settings...
 
 # Key
-panel.show=Show the panel
+key.panel.show=Show the panel
+key.autosend=Auto send message

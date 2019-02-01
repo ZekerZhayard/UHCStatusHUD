@@ -3,6 +3,7 @@ package io.github.zekerzhayard.uhcstatushud.commands;
 import java.util.List;
 
 import io.github.zekerzhayard.uhcstatushud.feature.BoardRenderer;
+import io.github.zekerzhayard.uhcstatushud.feature.HypixelAPIHandler;
 import io.github.zekerzhayard.uhcstatushud.utils.DebugUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -14,7 +15,7 @@ import net.minecraft.util.BlockPos;
 public class StatusCommand extends CommandBase {
     @Override()
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return BoardRenderer.instance.isInUHC;
+        return HypixelAPIHandler.isInUHC;
     }
 
     @Override()

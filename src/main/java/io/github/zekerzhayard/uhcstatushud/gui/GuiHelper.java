@@ -1,9 +1,6 @@
 package io.github.zekerzhayard.uhcstatushud.gui;
 
-import java.util.Arrays;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import io.github.zekerzhayard.uhcstatushud.UHCStatusHUD;
 import io.github.zekerzhayard.uhcstatushud.config.EnumConfig;
@@ -16,24 +13,18 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 
 class GuiHelper {
-    static String getColorName(int color) {
-        return EnumChatFormatting.func_175744_a(color).name();
-    }
+    static String examplePlayer = "e-x-a-m-p-l-e";
+    static String exampleTeams = " \u2022 (e-x-a-m-p-l-e, e-x-a-m-p-l-e, e-x-a-m-p-l-e)";
 
     private static int changeColor(GuiButton button, EnumConfig config) {
-        Integer[] myColourCodes = Arrays.stream(EnumChatFormatting.values()).filter(EnumChatFormatting::isColor).map(EnumChatFormatting::getColorIndex).toArray(Integer[]::new);
-        int index = ArrayUtils.indexOf(myColourCodes, config.getProperty().getInt()) + 1;
-        if (index >= ArrayUtils.getLength(myColourCodes)) {
-            index = 0;
-        }
-        config.getProperty().set(myColourCodes[index]);
-        button.displayString = EnumChatFormatting.func_175744_a(index).toString() + GuiHelper.getColorName(myColourCodes[index]);
+        config.getProperty().set((config.getProperty().getInt() + 2) % 17 - 1);
+        button.displayString = EnumConfig.Type.COLOR.getMap().get(config.getProperty().getInt());
         return 0;
     }
 
     private static int changeBoolean(GuiButton button, EnumConfig config) {
         config.getProperty().set(!config.getProperty().getBoolean());
-        button.displayString = config.getProperty().getBoolean() ? EnumChatFormatting.GREEN + "true" : EnumChatFormatting.RED + "false";
+        button.displayString = EnumConfig.Type.BOOLEAN.getMap().get(config.getProperty().getBoolean());
         return -1;
     }
 
@@ -52,24 +43,22 @@ class GuiHelper {
 
     static void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton) {
         if (clickedMouseButton == 0) {
-            if (mouseX >= EnumConfig.SOLOX.getProperty().getInt() && mouseX <= EnumConfig.SOLOX.getProperty().getInt() + Math.max(BoardRenderer.instance.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth("e-x-a-m-p-l-e")) && mouseY >= EnumConfig.SOLOY.getProperty().getInt() && mouseY <= EnumConfig.SOLOY.getProperty().getInt() + (BoardRenderer.instance.killerList.size() + 1) * 9) {
-                EnumConfig.SOLOX.getProperty().set(mouseX - Math.max(BoardRenderer.instance.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth("e-x-a-m-p-l-e")) / 2);
+            if (mouseX >= EnumConfig.SOLOX.getProperty().getInt() && mouseX <= EnumConfig.SOLOX.getProperty().getInt() + Math.max(BoardRenderer.instance.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.examplePlayer)) && mouseY >= EnumConfig.SOLOY.getProperty().getInt() && mouseY <= EnumConfig.SOLOY.getProperty().getInt() + (BoardRenderer.instance.killerList.size() + 1) * 9) {
+                EnumConfig.SOLOX.getProperty().set(mouseX - Math.max(BoardRenderer.instance.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.examplePlayer)) / 2);
                 EnumConfig.SOLOY.getProperty().set(mouseY - (BoardRenderer.instance.killerList.size() + 1) * 9 / 2);
-            } else if (mouseX >= EnumConfig.TEAMX.getProperty().getInt() && mouseX <= EnumConfig.TEAMX.getProperty().getInt() + Math.max(BoardRenderer.instance.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(" • (e-x-a-m-p-l-e, e-x-a-m-p-l-e, e-x-a-m-p-l-e)")) && mouseY >= EnumConfig.TEAMY.getProperty().getInt() && mouseY <= EnumConfig.TEAMY.getProperty().getInt() + (BoardRenderer.instance.teamkillerList.size() + 1) * 9) {
-                EnumConfig.TEAMX.getProperty().set(mouseX - Math.max(BoardRenderer.instance.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(" • (e-x-a-m-p-l-e, e-x-a-m-p-l-e, e-x-a-m-p-l-e)")) / 2);
+            } else if (mouseX >= EnumConfig.TEAMX.getProperty().getInt() && mouseX <= EnumConfig.TEAMX.getProperty().getInt() + Math.max(BoardRenderer.instance.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.exampleTeams)) && mouseY >= EnumConfig.TEAMY.getProperty().getInt() && mouseY <= EnumConfig.TEAMY.getProperty().getInt() + (BoardRenderer.instance.teamkillerList.size() + 1) * 9) {
+                EnumConfig.TEAMX.getProperty().set(mouseX - Math.max(BoardRenderer.instance.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.exampleTeams)) / 2);
                 EnumConfig.TEAMY.getProperty().set(mouseY - (BoardRenderer.instance.teamkillerList.size() + 1) * 9 / 2);
             }
         }
     }
 
     private static GuiButton initBooleanButton(int index, GuiScreen guiScreen, List<EnumConfig> configs, int base) {
-        return new GuiButton(index, guiScreen.width / 2 - 60, guiScreen.height / 2 - (configs.size() - 1) / 2 * 22 - 6 + index * 22 + base, 200, 20, configs.get(index).getProperty().getBoolean() ? EnumChatFormatting.GREEN + "true" : EnumChatFormatting.RED + "false");
+        return new GuiButton(index, guiScreen.width / 2 - 60, guiScreen.height / 2 - (configs.size() - 1) / 2 * 22 - 6 + index * 22 + base, 200, 20, EnumConfig.Type.BOOLEAN.getMap().get(configs.get(index).getProperty().getBoolean()));
     }
 
     private static GuiButton initColorButton(int index, GuiScreen guiScreen, List<EnumConfig> configs, int base) {
-        int color = configs.get(index).getProperty().getInt();
-        GuiButton button = new GuiButton(index, guiScreen.width / 2 - 60, guiScreen.height / 2 - (configs.size() - 1) / 2 * 22 - 6 + index * 22 + base, 200, 20, GuiHelper.getColorName(color));
-        button.displayString = EnumChatFormatting.func_175744_a(color).toString() + GuiHelper.getColorName(color);
+        GuiButton button = new GuiButton(index, guiScreen.width / 2 - 60, guiScreen.height / 2 - (configs.size() - 1) / 2 * 22 - 6 + index * 22 + base, 200, 20, EnumConfig.Type.COLOR.getMap().get(configs.get(index).getProperty().getInt()));
         return button;
     }
 
