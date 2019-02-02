@@ -18,8 +18,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.MinecraftForge;
 
 public class ModGuiSettings extends GuiScreen {
-    private List<EnumConfig> configs = Arrays.stream(EnumConfig.values()).filter(ec -> ec.getType().equals(EnumConfig.Type.BOOLEAN) || ec.getType().equals(EnumConfig.Type.COLOR)).collect(Collectors.toList());
-    private List<Integer> booleanConfigIndex = this.configs.stream().filter(ec -> ec.getType().equals(EnumConfig.Type.BOOLEAN)).map(ec -> this.configs.indexOf(ec)).collect(Collectors.toList());
+    private List<EnumConfig> configs = Arrays.stream(EnumConfig.values()).filter(ec -> !ec.getType().equals(EnumConfig.Type.LOCATION) && !ec.getType().equals(EnumConfig.Type.MANUAL)).collect(Collectors.toList());
     private GuiScreen parentScreen;
 
     public ModGuiSettings(GuiScreen parent) {
@@ -45,7 +44,7 @@ public class ModGuiSettings extends GuiScreen {
         } else if (button.id == 201) {
             Minecraft.getMinecraft().displayGuiScreen(new ModGuiConfig(this));
         } else {
-            GuiHelper.changeButton(this.booleanConfigIndex.contains(button.id), button, this.configs.get(button.id));
+            GuiHelper.clickButton(button, this.configs);
         }
     }
 
@@ -60,7 +59,7 @@ public class ModGuiSettings extends GuiScreen {
         }
         BoardRenderer.instance.playerWidth = Math.max(BoardRenderer.instance.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.examplePlayer));
         BoardRenderer.instance.teamsWidth = Math.max(BoardRenderer.instance.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.exampleTeams));
-        IntStream.range(0, this.configs.size()).forEachOrdered(i -> this.buttonList.add(GuiHelper.initButton(this.booleanConfigIndex.contains(i), i, this, this.configs, 0)));
+        GuiHelper.addButton(this, this.buttonList, this.configs, 0);
         this.buttonList.add(new GuiButton(200, this.width / 2 - 155, this.height - 35, 150, 20, I18n.format("gui.done")));
         this.buttonList.add(new GuiButton(201, this.width / 2 + 5, this.height - 35, 150, 20, I18n.format("gui.othersettings")));
     }

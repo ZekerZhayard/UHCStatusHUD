@@ -12,7 +12,6 @@ import net.minecraftforge.common.config.Property;
 
 public enum EnumConfig {
     SHOWTITLE("Show Title", true, I18n.format("config.panel.title"), EnumConfig.Type.BOOLEAN),
-    SHOWPANEL("Show Panel Background", true, I18n.format("config.panel.background"), EnumConfig.Type.BOOLEAN),
     DEBUGMODE("Debug Mode", false, I18n.format("config.debugmode"), EnumConfig.Type.BOOLEAN),
     KILLTRIGGER("Chat Trigger", new String[] {"[A-Za-z0-9_]{3,16}\\swas\\s.*\\sby\\s(?<killer>[A-Za-z0-9_]{3,16})", "[A-Za-z0-9_]{3,16}\\stried\\sto\\sswim\\sin\\slava\\sto\\sescape\\s(?<killer>[A-Za-z0-9_]{3,16})", "被(?<killer>[A-Za-z0-9_]{3,16})[一-龥]"}, I18n.format("config.trigger.kill"), EnumConfig.Type.MANUAL),
     PARTNERTRIGGER("Start Trigger", new String[] {"\\s+Your\\spartners\\sare\\s.*", "\\s+你的队友是\\s.*"}, I18n.format("config.trigger.start"), EnumConfig.Type.MANUAL),
@@ -24,7 +23,8 @@ public enum EnumConfig {
     TEAMY("Team Panel Y", 100, I18n.format("config.y"), EnumConfig.Type.LOCATION),
     PLAYERSCOLOR("Players Color", EnumChatFormatting.RED.getColorIndex(), I18n.format("config.color.players"), -1, 15, EnumConfig.Type.COLOR),
     TEAMSCOLOR("Teams Color", EnumChatFormatting.GREEN.getColorIndex(), I18n.format("config.color.teams"), -1, 15, EnumConfig.Type.COLOR),
-    PANELCOLOR("Panel Color", EnumChatFormatting.BLACK.getColorIndex(), I18n.format("config.color.panel"), -1, 15, EnumConfig.Type.COLOR);
+    PANELCOLOR("Panel Color", EnumChatFormatting.BLACK.getColorIndex(), I18n.format("config.color.panel"), -1, 15, EnumConfig.Type.COLOR),
+    PANELALPHA("Panel Alpha Channel", 0x50, I18n.format("config.panel.alpha"), 0x01, 0xFF, EnumConfig.Type.RANGE);
 
     private EnumConfig.Type type;
     private Object[] args;
@@ -64,6 +64,7 @@ public enum EnumConfig {
     public enum Type {
         BOOLEAN(ImmutableMap.of(true, EnumChatFormatting.GREEN + "true", false, EnumChatFormatting.RED + "false")),
         COLOR(new ImmutableMap.Builder<Object, String>().putAll(Arrays.stream(EnumChatFormatting.values()).filter(EnumChatFormatting::isColor).collect(Collectors.toMap(EnumChatFormatting::getColorIndex, ecf -> ecf.toString() + ecf.name()))).put(-1, "RAINBOW").build()),
+        RANGE(ImmutableMap.of()),
         LOCATION(ImmutableMap.of()),
         MANUAL(ImmutableMap.of());
 

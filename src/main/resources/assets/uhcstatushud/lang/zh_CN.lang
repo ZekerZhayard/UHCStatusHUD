@@ -1,6 +1,6 @@
 # Configurations comments translation
 config.panel.title=是否显示标题。
-config.panel.background=是否显示面板背景。
+config.panel.alpha=面板背景Alpha通道值。
 config.debugmode=是否在聊天栏显示调试信息。
 config.trigger.kill=击杀信息匹配正则表达式。
 config.trigger.start=UHC开始信息匹配正则表达式。

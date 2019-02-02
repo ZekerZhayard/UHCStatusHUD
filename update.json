@@ -5,6 +5,7 @@
         "1.8.9-recomended": "1.2.0"
     },
     "1.8.9": {
+        "1.2.1": "Add a panel alpha channel setting.",
         "1.2.0": "Add a panel display mode.\nAdd the panel background.\nAdd the limit dispaly count.\nFix the example panel couldn't display when save the custom config.",
         "1.1.0": "Change settings gui.\nFix caught hyixel api.",
         "1.0.1": "Fix the list couldn't be cleared when start a new game.",

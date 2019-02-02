@@ -1,6 +1,7 @@
 package io.github.zekerzhayard.uhcstatushud.gui;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import io.github.zekerzhayard.uhcstatushud.UHCStatusHUD;
 import io.github.zekerzhayard.uhcstatushud.config.EnumConfig;
@@ -11,25 +12,29 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.fml.client.config.GuiSlider;
 
 class GuiHelper {
     static String examplePlayer = "e-x-a-m-p-l-e";
     static String exampleTeams = " \u2022 (e-x-a-m-p-l-e, e-x-a-m-p-l-e, e-x-a-m-p-l-e)";
 
-    private static int changeColor(GuiButton button, EnumConfig config) {
-        config.getProperty().set((config.getProperty().getInt() + 2) % 17 - 1);
-        button.displayString = EnumConfig.Type.COLOR.getMap().get(config.getProperty().getInt());
-        return 0;
-    }
-
-    private static int changeBoolean(GuiButton button, EnumConfig config) {
-        config.getProperty().set(!config.getProperty().getBoolean());
-        button.displayString = EnumConfig.Type.BOOLEAN.getMap().get(config.getProperty().getBoolean());
-        return -1;
-    }
-
-    static int changeButton(boolean isBoolean, GuiButton button, EnumConfig config) {
-        return isBoolean ? GuiHelper.changeBoolean(button, config) : GuiHelper.changeColor(button, config);
+    static void clickButton(GuiButton button, List<EnumConfig> configs) {
+        switch (configs.get(button.id).getType()) {
+            case BOOLEAN: {
+                configs.get(button.id).getProperty().set(!configs.get(button.id).getProperty().getBoolean());
+                button.displayString = EnumConfig.Type.BOOLEAN.getMap().get(configs.get(button.id).getProperty().getBoolean());
+                break;
+            } case COLOR: {
+                configs.get(button.id).getProperty().set((configs.get(button.id).getProperty().getInt() + 2) % 17 - 1);
+                button.displayString = EnumConfig.Type.COLOR.getMap().get(configs.get(button.id).getProperty().getInt());
+                break;
+            } case RANGE: {
+                configs.get(button.id).getProperty().set(((GuiSlider) button).getValueInt());
+                break;
+            } default: {
+                // ignore
+            }
+        }
     }
 
     private static int j;
@@ -53,16 +58,30 @@ class GuiHelper {
         }
     }
 
-    private static GuiButton initBooleanButton(int index, GuiScreen guiScreen, List<EnumConfig> configs, int base) {
-        return new GuiButton(index, guiScreen.width / 2 - 60, guiScreen.height / 2 - (configs.size() - 1) / 2 * 22 - 6 + index * 22 + base, 200, 20, EnumConfig.Type.BOOLEAN.getMap().get(configs.get(index).getProperty().getBoolean()));
-    }
-
-    private static GuiButton initColorButton(int index, GuiScreen guiScreen, List<EnumConfig> configs, int base) {
-        GuiButton button = new GuiButton(index, guiScreen.width / 2 - 60, guiScreen.height / 2 - (configs.size() - 1) / 2 * 22 - 6 + index * 22 + base, 200, 20, EnumConfig.Type.COLOR.getMap().get(configs.get(index).getProperty().getInt()));
-        return button;
-    }
-
-    static GuiButton initButton(boolean isBoolean, int index, GuiScreen guiScreen, List<EnumConfig> configs, int base) {
-        return isBoolean ? GuiHelper.initBooleanButton(index, guiScreen, configs, base) : GuiHelper.initColorButton(index, guiScreen, configs, base);
+    static void addButton(GuiScreen guiScreen, List<GuiButton> buttonList, List<EnumConfig> configs, int base) {
+        IntStream.range(0, configs.size()).forEachOrdered(i -> {
+            int x = guiScreen.width / 2 - 60;
+            int y = guiScreen.height / 2 - (configs.size() - 1) / 2 * 22 - 6 + i * 22 + base;
+            switch (configs.get(i).getType()) {
+                case BOOLEAN: {
+                    buttonList.add(new GuiButton(i, x, y, EnumConfig.Type.BOOLEAN.getMap().get(configs.get(i).getProperty().getBoolean())));
+                    break;
+                } case COLOR: {
+                    buttonList.add(new GuiButton(i, x, y, EnumConfig.Type.COLOR.getMap().get(configs.get(i).getProperty().getInt())));
+                    break;
+                } case RANGE: {
+                    buttonList.add(new GuiSlider(i, x, y, 200, 20, "", "", Double.valueOf(configs.get(i).getProperty().getMinValue()), Double.valueOf(configs.get(i).getProperty().getMaxValue()), configs.get(i).getProperty().getInt(), true, false) {
+                        @Override()
+                        protected void mouseDragged(Minecraft mc, int x, int y) {
+                            super.mouseDragged(mc, x, y);
+                            configs.get(i).getProperty().set(this.getValueInt());
+                        }
+                    });
+                    break;
+                } default: {
+                    // ignore
+                }
+            }
+        });
     }
 }

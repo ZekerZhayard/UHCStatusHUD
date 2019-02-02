@@ -1,6 +1,6 @@
 # Configurations comments translation
 config.panel.title=Enable or disable the title.
-config.panel.background=Enable or disable the panel background.
+config.panel.alpha=The value of Alpha channel for the panel background.
 config.debugmode=Enable or disable debug messages in chat gui.
 config.trigger.kill=Killing message trigger regex.
 config.trigger.start=UHC start message trigger regex.

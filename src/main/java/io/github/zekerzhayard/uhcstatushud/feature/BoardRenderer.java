@@ -43,8 +43,8 @@ public class BoardRenderer {
             int y = EnumConfig.SOLOY.getProperty().getInt();
             int baseWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("=");
             int colorHex = this.getColorHex(EnumConfig.PANELCOLOR);
-            if (!this.killerList.isEmpty() && EnumConfig.SHOWPANEL.getProperty().getBoolean() && (HypixelAPIHandler.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings)) {
-                Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.playerWidth + this.playerkillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.killerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + 0x50000000);
+            if (!this.killerList.isEmpty() && (HypixelAPIHandler.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings)) {
+                Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.playerWidth + this.playerkillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.killerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + EnumConfig.PANELALPHA.getProperty().getInt() * 0x1000000);
             }
             if (EnumConfig.SHOWTITLE.getProperty().getBoolean()) {
                 Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.YELLOW.toString() + (HypixelAPIHandler.isInUHC ? EnumChatFormatting.BOLD.toString() : "") + UHCStatusHUD.NAME, x, y, 0xFFFFFF);
@@ -61,10 +61,8 @@ public class BoardRenderer {
                 x = EnumConfig.TEAMX.getProperty().getInt();
                 y = EnumConfig.TEAMY.getProperty().getInt();
                 if (!this.teamkillerList.isEmpty()) {
-                    if (EnumConfig.SHOWPANEL.getProperty().getBoolean()) {
-                        colorHex = this.getColorHex(EnumConfig.PANELCOLOR);
-                        Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.teamsWidth + this.teamskillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.teamkillerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + 0x50000000);
-                    }
+                    colorHex = this.getColorHex(EnumConfig.PANELCOLOR);
+                    Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.teamsWidth + this.teamskillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.teamkillerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + EnumConfig.PANELALPHA.getProperty().getInt() * 0x1000000);
                     colorHex = this.getColorHex(EnumConfig.TEAMSCOLOR);
                     Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.BOLD.toString() + "TEAMS:", x, y, colorHex);
                 }
