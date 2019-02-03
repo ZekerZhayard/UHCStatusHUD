@@ -21,10 +21,24 @@ public enum EnumConfig {
     SOLOY("Solo Panel Y", 0, I18n.format("config.y"), EnumConfig.Type.LOCATION),
     TEAMX("Team Panel X", 0, I18n.format("config.x"), EnumConfig.Type.LOCATION),
     TEAMY("Team Panel Y", 100, I18n.format("config.y"), EnumConfig.Type.LOCATION),
-    PLAYERSCOLOR("Players Color", EnumChatFormatting.RED.getColorIndex(), I18n.format("config.color.players"), -1, 15, EnumConfig.Type.COLOR),
-    TEAMSCOLOR("Teams Color", EnumChatFormatting.GREEN.getColorIndex(), I18n.format("config.color.teams"), -1, 15, EnumConfig.Type.COLOR),
-    PANELCOLOR("Panel Color", EnumChatFormatting.BLACK.getColorIndex(), I18n.format("config.color.panel"), -1, 15, EnumConfig.Type.COLOR),
-    PANELALPHA("Panel Alpha Channel", 0x50, I18n.format("config.panel.alpha"), 0x01, 0xFF, EnumConfig.Type.RANGE);
+    PLAYERSCOLORTYPE("Players Color Type", 0, "", 0, 2, EnumConfig.Type.COLORMANAGER),
+    PLAYERSCOLOR("Players Color", EnumChatFormatting.RED.getColorIndex(), I18n.format("config.color.players"), 0, 15, EnumConfig.Type.COLOR),
+    PLAYERSCOLORALPHA("Players Color Alpha", 0xFF, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    PLAYERSCOLORRED("Players Color Red", 0xFF, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    PLAYERSCOLORGREEN("Players Color Green", 0x55, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    PLAYERSCOLORBLUE("Players Color Blue", 0x55, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    TEAMSCOLORTYPE("Teams Color Type", 0, "", 0, 2, EnumConfig.Type.COLORMANAGER),
+    TEAMSCOLOR("Teams Color", EnumChatFormatting.GREEN.getColorIndex(), I18n.format("config.color.teams"), 0, 15, EnumConfig.Type.COLOR),
+    TEAMSCOLORALPHA("Teams Color Alpha", 0x50, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    TEAMSCOLORRED("Teams Color Red", 0x55, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    TEAMSCOLORGREEN("Teams Color Green", 0xFF, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    TEAMSCOLORBLUE("Teams Color Blue", 0x55, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    PANELCOLORTYPE("Panel Color Type", 2, "", 0, 2, EnumConfig.Type.COLORMANAGER),
+    PANELCOLOR("Panel Color", EnumChatFormatting.BLACK.getColorIndex(), I18n.format("config.color.panel"), 0, 15, EnumConfig.Type.COLOR),
+    PANELCOLORALPHA("Panel Color Alpha", 0x50, I18n.format("config.panel.alpha"), 0x01, 0xFF, EnumConfig.Type.RANGE),
+    PANELCOLORRED("Panel Color Red", 0x00, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    PANELCOLORGREEN("Panel Color Green", 0x00, "", 0x01, 0xFF, EnumConfig.Type.RANGE),
+    PANELCOLORBLUE("Panel Color Blue", 0x00, "", 0x01, 0xFF, EnumConfig.Type.RANGE);
 
     private EnumConfig.Type type;
     private Object[] args;
@@ -63,7 +77,8 @@ public enum EnumConfig {
 
     public enum Type {
         BOOLEAN(ImmutableMap.of(true, EnumChatFormatting.GREEN + "true", false, EnumChatFormatting.RED + "false")),
-        COLOR(new ImmutableMap.Builder<Object, String>().putAll(Arrays.stream(EnumChatFormatting.values()).filter(EnumChatFormatting::isColor).collect(Collectors.toMap(EnumChatFormatting::getColorIndex, ecf -> ecf.toString() + ecf.name()))).put(-1, "RAINBOW").build()),
+        COLORMANAGER(ImmutableMap.of(0, "Classic", 1, "Chroma", 2, "Rainbow")),
+        COLOR(new ImmutableMap.Builder<Object, String>().putAll(Arrays.stream(EnumChatFormatting.values()).filter(EnumChatFormatting::isColor).collect(Collectors.toMap(EnumChatFormatting::getColorIndex, ecf -> ecf.toString() + ecf.name()))).build()),
         RANGE(ImmutableMap.of()),
         LOCATION(ImmutableMap.of()),
         MANUAL(ImmutableMap.of());

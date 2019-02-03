@@ -42,36 +42,32 @@ public class BoardRenderer {
             int x = EnumConfig.SOLOX.getProperty().getInt();
             int y = EnumConfig.SOLOY.getProperty().getInt();
             int baseWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth("=");
-            int colorHex = this.getColorHex(EnumConfig.PANELCOLOR);
             if (!this.killerList.isEmpty() && (HypixelAPIHandler.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings)) {
-                Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.playerWidth + this.playerkillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.killerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + EnumConfig.PANELALPHA.getProperty().getInt() * 0x1000000);
+                Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.playerWidth + this.playerkillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.killerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, this.getColorHex(EnumConfig.PANELCOLORTYPE));
             }
             if (EnumConfig.SHOWTITLE.getProperty().getBoolean()) {
                 Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.YELLOW.toString() + (HypixelAPIHandler.isInUHC ? EnumChatFormatting.BOLD.toString() : "") + UHCStatusHUD.NAME, x, y, 0xFFFFFF);
             }
             if (HypixelAPIHandler.isInUHC || Minecraft.getMinecraft().currentScreen instanceof ModGuiSettings) {
-                colorHex = this.getColorHex(EnumConfig.PLAYERSCOLOR);
                 for (Map.Entry<String, String> killer : this.killerList) {
                     if (KeyListener.instance.showPanelMode == 1 && this.killerList.indexOf(killer) + 1 > EnumConfig.MAXDISPLAY.getProperty().getInt()) {
                         break;
                     }
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(killer.getKey(), x + baseWidth * 2, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, colorHex);
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(killer.getValue(), x + baseWidth * 4 + this.playerWidth, y, colorHex);
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(killer.getKey(), x + baseWidth * 2, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, this.getColorHex(EnumConfig.PLAYERSCOLORTYPE));
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(killer.getValue(), x + baseWidth * 4 + this.playerWidth, y, this.getColorHex(EnumConfig.PLAYERSCOLORTYPE));
                 }
                 x = EnumConfig.TEAMX.getProperty().getInt();
                 y = EnumConfig.TEAMY.getProperty().getInt();
                 if (!this.teamkillerList.isEmpty()) {
-                    colorHex = this.getColorHex(EnumConfig.PANELCOLOR);
-                    Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.teamsWidth + this.teamskillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.teamkillerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, colorHex + EnumConfig.PANELALPHA.getProperty().getInt() * 0x1000000);
-                    colorHex = this.getColorHex(EnumConfig.TEAMSCOLOR);
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.BOLD.toString() + "TEAMS:", x, y, colorHex);
+                    Gui.drawRect(x - 4, y - 2, x + baseWidth * 4 + this.teamsWidth + this.teamskillWidth + 4, y + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * (Math.min(this.teamkillerList.size(), KeyListener.instance.showPanelMode == 1 ? EnumConfig.MAXDISPLAY.getProperty().getInt() : 111) + 1) + 2, this.getColorHex(EnumConfig.PANELCOLORTYPE));
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(EnumChatFormatting.BOLD.toString() + "TEAMS:", x, y, this.getColorHex(EnumConfig.TEAMSCOLORTYPE));
                 }
                 for (Map.Entry<String, String> team : this.teamkillerList) {
                     if (KeyListener.instance.showPanelMode == 1 && this.teamkillerList.indexOf(team) + 1 > EnumConfig.MAXDISPLAY.getProperty().getInt()) {
                         break;
                     }
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(team.getKey(), x, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, colorHex);
-                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(team.getValue(), x + baseWidth * 2 + this.teamsWidth, y, colorHex);
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(team.getKey(), x, y += Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, this.getColorHex(EnumConfig.TEAMSCOLORTYPE));
+                    Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(team.getValue(), x + baseWidth * 2 + this.teamsWidth, y, this.getColorHex(EnumConfig.TEAMSCOLORTYPE));
                 }
             }
         }
@@ -135,10 +131,19 @@ public class BoardRenderer {
         }
     }
 
-    private int getColorHex(EnumConfig colorConfig) {
-        if (!colorConfig.getType().equals(EnumConfig.Type.COLOR)) {
-            return 0;
+    private int getColorHex(EnumConfig colorManager) {
+        int index = Arrays.binarySearch(EnumConfig.values(), colorManager);
+        int alpha = EnumConfig.values()[index + 2].getProperty().getInt() << 24;
+        switch (colorManager.getProperty().getInt()) {
+            case 0: {
+                return alpha + Minecraft.getMinecraft().fontRendererObj.getColorCode(Integer.toHexString(EnumConfig.values()[index + 1].getProperty().getInt()).toCharArray()[0]);
+            } case 1: {
+                return alpha + (EnumConfig.values()[index + 3].getProperty().getInt() << 16) + (EnumConfig.values()[index + 4].getProperty().getInt() << 8) + EnumConfig.values()[index + 5].getProperty().getInt();
+            } case 2: {
+                return alpha + Color.HSBtoRGB(System.currentTimeMillis() % 1000L / 1000.0F, 0.8F, 0.8F);
+            } default: {
+                return 0;
+            }
         }
-        return colorConfig.getProperty().getInt() == -1 ? Color.HSBtoRGB(System.currentTimeMillis() % 1000L / 1000.0F, 0.8F, 0.8F) : Minecraft.getMinecraft().fontRendererObj.getColorCode(Integer.toHexString(colorConfig.getProperty().getInt()).toCharArray()[0]);
     }
 }

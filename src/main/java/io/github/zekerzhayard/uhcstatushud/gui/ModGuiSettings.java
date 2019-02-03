@@ -8,6 +8,8 @@ import java.util.stream.IntStream;
 
 import com.google.common.collect.Maps;
 
+import org.lwjgl.input.Mouse;
+
 import io.github.zekerzhayard.uhcstatushud.config.EnumConfig;
 import io.github.zekerzhayard.uhcstatushud.config.ModConfig;
 import io.github.zekerzhayard.uhcstatushud.feature.BoardRenderer;
@@ -18,6 +20,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.MinecraftForge;
 
 public class ModGuiSettings extends GuiScreen {
+    private int base = 0;
     private List<EnumConfig> configs = Arrays.stream(EnumConfig.values()).filter(ec -> !ec.getType().equals(EnumConfig.Type.LOCATION) && !ec.getType().equals(EnumConfig.Type.MANUAL)).collect(Collectors.toList());
     private GuiScreen parentScreen;
 
@@ -28,24 +31,13 @@ public class ModGuiSettings extends GuiScreen {
     @Override()
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        GuiHelper.drawString(this, this.fontRendererObj, this.configs.stream().map(c -> c.getProperty().getName()).collect(Collectors.toList()), "Normal", 11);
+        GuiHelper.drawString(this, this.fontRendererObj, this.configs.stream().map(c -> c.getProperty().getName()).collect(Collectors.toList()), "Normal", this.base + 11);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override()
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
         GuiHelper.mouseClickMove(mouseX, mouseY, clickedMouseButton);
-    }
-
-    @Override()
-    protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 200) {
-            Minecraft.getMinecraft().displayGuiScreen(this.parentScreen);
-        } else if (button.id == 201) {
-            Minecraft.getMinecraft().displayGuiScreen(new ModGuiConfig(this));
-        } else {
-            GuiHelper.clickButton(button, this.configs);
-        }
     }
 
     @Override()
@@ -59,9 +51,38 @@ public class ModGuiSettings extends GuiScreen {
         }
         BoardRenderer.instance.playerWidth = Math.max(BoardRenderer.instance.playerWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.examplePlayer));
         BoardRenderer.instance.teamsWidth = Math.max(BoardRenderer.instance.teamsWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(GuiHelper.exampleTeams));
-        GuiHelper.addButton(this, this.buttonList, this.configs, 0);
-        this.buttonList.add(new GuiButton(200, this.width / 2 - 155, this.height - 35, 150, 20, I18n.format("gui.done")));
-        this.buttonList.add(new GuiButton(201, this.width / 2 + 5, this.height - 35, 150, 20, I18n.format("gui.othersettings")));
+        GuiHelper.addButton(this, this.buttonList, this.configs, this.base);
+        this.buttonList.add(new GuiButton(200, 10, this.height - 35, 150, 20, I18n.format("gui.done")) {
+            @Override()
+            public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+                if (super.mousePressed(mc, mouseX, mouseY)) {
+                    Minecraft.getMinecraft().displayGuiScreen(ModGuiSettings.this.parentScreen);
+                }
+                return super.mousePressed(mc, mouseX, mouseY);
+            }
+        });
+        this.buttonList.add(new GuiButton(201, 10, this.height - 55, 150, 20, I18n.format("gui.othersettings")) {
+            @Override()
+            public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
+                if (super.mousePressed(mc, mouseX, mouseY)) {
+                    Minecraft.getMinecraft().displayGuiScreen(new ModGuiConfig(ModGuiSettings.this));
+                }
+                return super.mousePressed(mc, mouseX, mouseY);
+            }
+        });
+    }
+    
+    @Override()
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        int distance = Mouse.getDWheel() / 10;
+        if ((this.base < -55 && distance < 0) || (this.base > 150 && distance > 0)) {
+            return;
+        }
+        if (distance != 0) {
+            this.base += distance;
+            this.buttonList.stream().filter(button -> button.xPosition != 10).forEach(button -> button.yPosition += distance);
+        }
     }
 
     @Override()
